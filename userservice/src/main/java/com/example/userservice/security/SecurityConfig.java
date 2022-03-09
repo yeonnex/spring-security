@@ -1,8 +1,11 @@
 package com.example.userservice.security;
 
 
+import com.example.userservice.filter.CustomAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -33,6 +36,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
         http.authorizeRequests().anyRequest().permitAll();
-        http.addFilter(null);
+        http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean())); // 이 필터를 쓰기 위해서는 authenticationManager 가 필요하기 때문
+
+    }
+
+
+    // Custom 한 필터를 쓸 때 AuthenticationManager 객체가 필요하므로 오버라이드하여 겟!
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception{
+        return super.authenticationManagerBean();
     }
 }
